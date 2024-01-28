@@ -1,0 +1,60 @@
+plugins {
+	id 'org.springframework.boot' version '3.2.1'//지정한 스프리부트버전
+	id 'io.spring.dependency-management' version '1.1.4'
+	id 'java'//지정한 개발언어
+}
+
+group = 'com.herokuapp'
+version = '0.0.1-SNAPSHOT'//kimilguk-boot2-0.0.1-SNAPSHOT.jar실행파일명 지정됨
+
+java {
+	sourceCompatibility = '17'
+}
+
+configurations {
+	compileOnly {
+		extendsFrom annotationProcessor
+	}
+}
+
+repositories {
+	mavenCentral()//외부 의존성모듈을 다운받을 위치지정
+}
+
+dependencies {
+	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+	implementation 'org.springframework.boot:spring-boot-starter-mustache'
+	implementation 'org.springframework.boot:spring-boot-starter-oauth2-client'
+	implementation 'org.springframework.boot:spring-boot-starter-security'
+	implementation 'org.springframework.boot:spring-boot-starter-web'
+	implementation 'org.springframework.session:spring-session-jdbc'
+	compileOnly 'org.projectlombok:lombok'
+	developmentOnly 'org.springframework.boot:spring-boot-devtools'
+	runtimeOnly 'com.h2database:h2'
+	runtimeOnly 'org.postgresql:postgresql'
+	annotationProcessor 'org.projectlombok:lombok'
+	testImplementation 'org.springframework.boot:spring-boot-starter-test'
+	testImplementation 'org.springframework.security:spring-security-test'
+	//JSONObject 사용 https://mvnrepository.com/artifact/org.json/json
+	implementation group:'org.json', name:'json', version:'20210307'
+	
+}
+
+tasks.named('test') {
+	useJUnitPlatform()//Java단위테스트인 Junit을 실행가능하게 지정(기본값)
+}
+
+bootJar{
+	archivesBaseName = 'kimilguk-boot3'
+	archiveFileName = 'kimilguk-boot3.jar'
+	archiveVersion = "0.0.1"
+}
+
+//단, 구름ide에서는 배포시 테스트는 제외하도록 지정(아래)
+test {
+	exclude '**/*'
+}
+//단, 구름ide에서는 KimilgukBoot2Application-plain.jar 파일까지 자동으로 생성되기 때문에 생성되지 않도록 처리한다(아래)
+jar {
+	enabled = true
+}
