@@ -1,5 +1,6 @@
 ### 스프링부트와 클라우드활용 강의용 깃 소스를 스프링부트2 프로젝트를 스프링부트3로 마이그레이션
 - 기존 스프링부트2 프로젝트 : https://github.com/kimilguk/kimilguk-boot2
+- 마이그레이션 스프링부트3 프로젝트 : https://github.com/kimilguk/kimilguk-boot3
 - 2022년 11월에 기존의 Spring framework 5 와 Spring Boot 2.X 버전을 대체하는 Spring framework6 과 Spring Boot3 가 릴리즈 되었습니다.
 - 스프링부트3에서 사용방법이 많이 변경된 이유는(아래)
 - JavaEE 상표권은 오라클이 갖고 있어서 오픈소스 그룸인 이클립스 재단에서 JavaEE 패키지 이름인 javax.* 를 사용할 수 없습니다.
