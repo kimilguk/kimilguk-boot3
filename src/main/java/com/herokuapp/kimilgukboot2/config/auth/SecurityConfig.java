@@ -13,11 +13,9 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UserDetailsService;
 //import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter; 스프링부트3에서 제거
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.provisioning.InMemoryUserDetailsManager;
-import org.springframework.security.provisioning.JdbcUserDetailsManager;
 import org.springframework.security.web.SecurityFilterChain;
 
 import lombok.RequiredArgsConstructor;
@@ -49,14 +47,32 @@ public class SecurityConfig { //스프링부트3에서 제거  extends WebSecuri
 	}
 	*/
 	// 스프링부트3에서 추가 : DB용 로그인 사용 시(작업 중...아래)
-	/*
+	// 생성해둔 AuthenticatorProvider를 주입받는다.해당 클래스로 PrincipalDetailsService 내부 로직을 수행하며 인증 처리도 같이 진행된다
+    @Autowired
+    SimpleUsersAuthenticatorProvider memberAuthenticatorProvider;
+    // 로그인 기억하기 사용을 위해 AuthenticatorProvider 내부에 PrincipalDetailsService 선언
+    @Autowired
+    SimpleUsersPrincipalDetailService memberPrincipalDetailService;
+
+    // WebSecurityConfigurerAdapter 방식으로 인증 처리를 진행 하기 위해 기존엔 Override 하여 구현했지만
+    // Spring Security 5.7.0 버전/스프링부트3 부터는 AuthenticationManagerBuilder를 직접 생성하여 AuthenticationManager를 생성해야 한다.
+    @Autowired
+    public void configure (AuthenticationManagerBuilder auth) throws Exception {
+        auth.authenticationProvider(memberAuthenticatorProvider);
+    }
+    /*
+	@Bean
+    AuthenticationManager authenticationManager(
+    AuthenticationConfiguration authenticationConfiguration) throws Exception {
+        return authenticationConfiguration.getAuthenticationManager();
+    }
 	@Bean
     public UserDetailsService userDetailsService(DataSource dataSource) {
         return new JdbcUserDetailsManager(dataSource);
     }
     */
-	
 	// 스프링부트3에서 추가 : 메모리용 로그인 사용 시(아래)
+	/*
 	@Bean
 	public InMemoryUserDetailsManager userDetailsService() {
 		UserDetails admin = User.withUsername("admin")
@@ -68,7 +84,8 @@ public class SecurityConfig { //스프링부트3에서 제거  extends WebSecuri
 				                .roles("USER")
 				                .build();
 		return new InMemoryUserDetailsManager(admin, user);
-	}	
+	}
+	*/
 	//PasswordEndoder 메소드(비번암호화) 필수
 	@Bean//클래스 뿐 아니라 메소드도 빈 애노테이션을 붙여서 스프링에서 사용가능한 클래스로 등록할 수 있다.
 	public BCryptPasswordEncoder passwordEncoder() {
