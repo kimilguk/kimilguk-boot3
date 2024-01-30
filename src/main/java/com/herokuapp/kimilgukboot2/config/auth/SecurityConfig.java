@@ -29,7 +29,7 @@ public class SecurityConfig { //스프링부트3에서 제거  extends WebSecuri
 	private DataSource dataSource;//jdbc를 사용하는데 필요한 객체 생성
 	private final CustomOAuth2UserService customOAuth2UserService;//객체 생성
 	/*
-	@Override 스프링부트3에서 대체
+	@Override 스프링부트3에서 대체(아래)
 	protected void configure(AuthenticationManagerBuilder auth) throws Exception {
 		auth.jdbcAuthentication()
 			.dataSource(dataSource)
@@ -46,31 +46,17 @@ public class SecurityConfig { //스프링부트3에서 제거  extends WebSecuri
 		 *
 	}
 	*/
-	// 스프링부트3에서 추가 : DB용 로그인 사용 시(작업 중...아래)
-	// 생성해둔 AuthenticatorProvider를 주입받는다.해당 클래스로 PrincipalDetailsService 내부 로직을 수행하며 인증 처리도 같이 진행된다
-    @Autowired
-    SimpleUsersAuthenticatorProvider memberAuthenticatorProvider;
-    // 로그인 기억하기 사용을 위해 AuthenticatorProvider 내부에 PrincipalDetailsService 선언
-    @Autowired
-    SimpleUsersPrincipalDetailService memberPrincipalDetailService;
-
+	// 스프링부트3에서 추가 : DB용 로그인 사용 시(아래)
     // WebSecurityConfigurerAdapter 방식으로 인증 처리를 진행 하기 위해 기존엔 Override 하여 구현했지만
-    // Spring Security 5.7.0 버전/스프링부트3 부터는 AuthenticationManagerBuilder를 직접 생성하여 AuthenticationManager를 생성해야 한다.
+    // Spring Security 6/스프링부트3 부터는 AuthenticationManagerBuilder를 직접 생성하여 AuthenticationManager를 생성해야 한다.
     @Autowired
     public void configure (AuthenticationManagerBuilder auth) throws Exception {
-        auth.authenticationProvider(memberAuthenticatorProvider);
+    	auth.jdbcAuthentication()
+		.dataSource(dataSource)
+		.rolePrefix("ROLE_")//현재 테이블에 저장될 때 ADMIN, USER로 저장되기 때문에 생략된 부분 추가
+		.usersByUsernameQuery("select username, password, enabled from simple_users where username = ?")//로그인 인증 쿼리
+		.authoritiesByUsernameQuery("select username, role from simple_users where username = ?");//DB에서 권한 가져오는 쿼리
     }
-    /*
-	@Bean
-    AuthenticationManager authenticationManager(
-    AuthenticationConfiguration authenticationConfiguration) throws Exception {
-        return authenticationConfiguration.getAuthenticationManager();
-    }
-	@Bean
-    public UserDetailsService userDetailsService(DataSource dataSource) {
-        return new JdbcUserDetailsManager(dataSource);
-    }
-    */
 	// 스프링부트3에서 추가 : 메모리용 로그인 사용 시(아래)
 	/*
 	@Bean
